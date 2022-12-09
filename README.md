@@ -14,6 +14,8 @@ In:
 Push double click on file. This .bat will execute youtube-dl-inputbox.ps1 Windows PowerShell script.  
 
 ![Input box](images/input_box.png)  
+
+If your system was unable to run the script because it stated the script was of unknown origin (Internet), copy the code from the Implementation section of this README. After, create the two files locally (youtube-dl-inputbox.ps1 and youtube-dl-inputbox.bat).
 ## Implementation
 In:  
 
