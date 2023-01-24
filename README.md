@@ -47,15 +47,15 @@ if (!(Test-Path $exeFilePath -PathType Leaf))
 
     try
     {
-	showMessageWindow -Message "We will download the youtube-dl executable from $exeFileURL" -Title "Information" -Button OK -Icon Information
+        showMessageWindow -Message "We will download the youtube-dl executable from $exeFileURL" -Title "Information" -Button OK -Icon Information
         Write-Output "We will download the youtube-dl executable from $exeFileURL"
         Invoke-WebRequest -URI $exeFileURL -OutFile $exeFilePath
     }
     catch
     {
-	showMessageWindow -Message "Error downloading automatically the youtube-dl executable from $exeFileURL" -Title "Error" -Button OK -Icon Error
+        showMessageWindow -Message "Error downloading automatically the youtube-dl executable from $exeFileURL" -Title "Error" -Button OK -Icon Error
         Write-Output "Error downloading automatically the youtube-dl executable from $exeFileURL"
-	showMessageWindow -Message "You can download manually the youtube-dl executable from $exeFileURL" -Title "Information" -Button OK -Icon Information
+        showMessageWindow -Message "You can download manually the youtube-dl executable from $exeFileURL" -Title "Information" -Button OK -Icon Information
         Write-Output "You can download manually the youtube-dl executable from $exeFileURL"
     }
 }
@@ -89,7 +89,7 @@ $form.Controls.Add($label)
 
 $textBox = New-Object System.Windows.Forms.TextBox
 $textBox.Location = New-Object System.Drawing.Point(10,40)
-$textBox.Size = New-Object System.Drawing.Size(290,20)
+$textBox.Size = New-Object System.Drawing.Size(310,20)
 $textBox.MaxLength = 92
 $form.Controls.Add($textBox)
 
@@ -103,17 +103,25 @@ if ($result -eq [System.Windows.Forms.DialogResult]::OK)
     if (!(Test-Path $exeFilePath -PathType Leaf))
     {
         showMessageWindow -Message "Could not execute the youtube-dl.exe file." -Title "Error" -Button OK -Icon Error
-	Write-Output "Could not execute the youtube-dl.exe file."
+        Write-Output "Could not execute the youtube-dl.exe file."
     }
     elseif ($textBox.Text.Length -ne 0)
     {
         $youtubeVideoURL = $textBox.Text
-        .\youtube-dl.exe $youtubeVideoURL
+        # List all available formats of requested video
+        $optionSelected = .\youtube-dl.exe -F $youtubeVideoURL | Select -skip 4 | Select-Object @{ n='List all available formats'; e={$_} } | Out-GridView -Title "Requested video" -OutputMode Single
+        if ($optionSelected -ne $null)
+        {
+            $optionSelected = -split $optionSelected -split("=")
+            $codeSelected = $optionSelected[4]
+            Write-Output "Format code selected: $($codeSelected)"
+            .\youtube-dl.exe -f $codeSelected $youtubeVideoURL
+        } 
     }
     else
     {
         showMessageWindow -Message "YouTube video URL input is not valid." -Title "Error" -Button OK -Icon Error
-	Write-Output "YouTube video URL input is not valid."
+        Write-Output "YouTube video URL input is not valid."
     }
 }
 ```
